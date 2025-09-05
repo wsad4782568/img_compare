@@ -1,0 +1,13 @@
+{
+  "name": "cloudshell-tencentcloud-sdk-nodejs-ocr-environment",
+  "version": "1.0.0",
+  "author": "tencent-cloud",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "tencentcloud-sdk-nodejs-intl-en": "^3.0.1249",
+    "tencentcloud-sdk-nodejs-ocr": "latest",
+    "whatwg-url": "^14.2.0"
+  }
+}
