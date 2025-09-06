@@ -239,7 +239,7 @@
             基准图片
           </h3>
           
-          <div class="image-container relative" style="height: 500px;">
+          <div class="image-container relative" style="height: 800px;">
             <img id="resultImage1" src="" alt="基准图片" class="absolute top-0 left-0 max-w-none" />
             
             <!-- 差异标记将动态添加到这里 -->
@@ -254,7 +254,7 @@
             对比图片
           </h3>
           
-          <div class="image-container relative" style="height: 500px;">
+          <div class="image-container relative" style="height: 800px;">
             <img id="resultImage2" src="" alt="对比图片" class="absolute top-0 left-0 max-w-none" />
             
             <!-- 差异标记将动态添加到这里 -->
@@ -265,18 +265,18 @@
       
       <!-- 图片操作工具栏 -->
       <div class="flex flex-wrap justify-center gap-4 mb-8 bg-white p-4 rounded-lg shadow-sm">
-        <button id="zoomInBtn" class="btn-secondary flex items-center">
+        <!-- <button id="zoomInBtn" class="btn-secondary flex items-center">
           <i class="fa fa-search-plus mr-2"></i>放大
         </button>
         <button id="zoomOutBtn" class="btn-secondary flex items-center">
           <i class="fa fa-search-minus mr-2"></i>缩小
-        </button>
+        </button> -->
         <button id="resetZoomBtn" class="btn-secondary flex items-center">
           <i class="fa fa-refresh mr-2"></i>重置视图
         </button>
-        <button id="fitToScreenBtn" class="btn-secondary flex items-center">
+        <!-- <button id="fitToScreenBtn" class="btn-secondary flex items-center">
           <i class="fa fa-expand mr-2"></i>适应屏幕
-        </button>
+        </button> -->
         <span class="text-gray-600 self-center ml-4">提示: 可拖拽图片查看不同区域</span>
       </div>
       
@@ -586,10 +586,10 @@
       elements.retryAnalysisBtn.addEventListener('click', startAnalysis);
       
       // 图片操作事件
-      elements.zoomInBtn.addEventListener('click', zoomIn);
-      elements.zoomOutBtn.addEventListener('click', zoomOut);
+      // elements.zoomInBtn.addEventListener('click', zoomIn);
+      // elements.zoomOutBtn.addEventListener('click', zoomOut);
       elements.resetZoomBtn.addEventListener('click', resetZoom);
-      elements.fitToScreenBtn.addEventListener('click', fitToScreen);
+      // elements.fitToScreenBtn.addEventListener('click', fitToScreen);
       
       // 图片拖拽事件
       setupImageDrag();
@@ -984,6 +984,10 @@
       
       // 适应屏幕显示
       fitToScreen();
+      console.log('setTimeout 1000 resetZoom')
+      setTimeout(() => {
+        resetZoom()
+      }, 1000);
       
       // 显示结果页面
       elements.resultPage.classList.remove('hidden');
