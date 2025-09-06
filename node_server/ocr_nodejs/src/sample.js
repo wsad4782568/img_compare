@@ -155,38 +155,6 @@ function compareImageTexts(texts1, texts2) {
     }
   });
   
-  // 找出内容不同但位置相近的文本（可能是修改过的内容）
-  // 这里使用简单的位置 proximity 检查，实际应用中可能需要更复杂的算法
-  texts1.forEach((text1, index1) => {
-    texts2.forEach((text2, index2) => {
-      if (text1.DetectedText !== text2.DetectedText && 
-          areTextItemsClose(text1, text2)) {
-        
-        const bbox1 = calculateBoundingBox(text1.Polygon);
-        const bbox2 = calculateBoundingBox(text2.Polygon);
-        
-        differences.push({
-          id: `diff-${index1}-${index2}`,
-          type: 'content-changed',
-          image1: {
-            x: bbox1.x,
-            y: bbox1.y,
-            width: bbox1.width,
-            height: bbox1.height,
-            text: text1.DetectedText
-          },
-          image2: {
-            x: bbox2.x,
-            y: bbox2.y,
-            width: bbox2.width,
-            height: bbox2.height,
-            text: text2.DetectedText
-          }
-        });
-      }
-    });
-  });
-  
   return differences;
 }
 
