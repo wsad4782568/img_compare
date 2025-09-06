@@ -802,62 +802,6 @@
       });
     }
 
-    // 后端调用腾讯云OCR的示例代码（应在Node.js后端实现）
-    /*
-    // 这部分代码应该放在你的Node.js后端，而不是前端
-    const tencentcloud = require("tencentcloud-sdk-nodejs-intl-en");
-
-    const OcrClient = tencentcloud.ocr.v20181119.Client;
-    const models = tencentcloud.ocr.v20181119.Models;
-
-    const Credential = tencentcloud.common.Credential;
-    const ClientProfile = tencentcloud.common.ClientProfile;
-    const HttpProfile = tencentcloud.common.HttpProfile;
-
-    // 处理OCR请求的API
-    app.post('/api/ocr', async (req, res) => {
-      try {
-        const { ImageUrl } = req.body;
-        
-        // 实例化认证对象
-        let cred = new Credential(
-          process.env.TENCENTCLOUD_SECRET_ID, 
-          process.env.TENCENTCLOUD_SECRET_KEY
-        );
-        
-        // 实例化HTTP选项
-        let httpProfile = new HttpProfile();
-        httpProfile.endpoint = "ocr.tencentcloudapi.com";
-        
-        // 实例化客户端选项
-        let clientProfile = new ClientProfile();
-        clientProfile.httpProfile = httpProfile;
-        
-        // 实例化OCR客户端
-        let client = new OcrClient(cred, "", clientProfile);
-        
-        // 实例化请求对象
-        let req = new models.GeneralBasicOcrRequest();
-        let params = {
-          "ImageUrl": ImageUrl
-        };
-        req.from_json_string(JSON.stringify(params));
-        
-        // 发送请求
-        client.GeneralBasicOcr(req, function(err, response) {
-          if (err) {
-            console.error(err);
-            return res.status(500).json({ error: err.message });
-          }
-          res.json(response);
-        });
-      } catch (error) {
-        console.error('OCR处理错误:', error);
-        res.status(500).json({ error: error.message });
-      }
-    });
-    */
-
     // 移除图片
     function removeImage(imageId) {
       // 如果已经上传到COS，删除COS中的文件
