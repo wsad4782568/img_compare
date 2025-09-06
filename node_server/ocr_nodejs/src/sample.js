@@ -108,14 +108,17 @@ app.post('/api/compare-documents', async (req, res) => {
 // 比较两张图片中的文本差异
 function compareImageTexts(texts1, texts2) {
   const differences = [];
-  
-  // 提取文本内容以便快速比较
-  const textContents1 = texts1.map(item => item.DetectedText);
-  const textContents2 = texts2.map(item => item.DetectedText);
-  
+
+  // 一个函数用于标准化文本，去除空格和符号
+  const normalizeText = (text) => text.replace(/[\s\W]+/g, '').toLowerCase();
+
+  // 提取并标准化文本内容以便快速比较
+  const textContents1 = texts1.map(item => normalizeText(item.DetectedText));
+  const textContents2 = texts2.map(item => normalizeText(item.DetectedText));
+
   // 找出只在第一张图中存在的文本
   texts1.forEach((textItem, index) => {
-    if (!textContents2.includes(textItem.DetectedText)) {
+    if (!textContents2.includes(normalizeText(textItem.DetectedText))) {
       // 计算多边形的边界框
       const bbox = calculateBoundingBox(textItem.Polygon);
       
@@ -133,10 +136,10 @@ function compareImageTexts(texts1, texts2) {
       });
     }
   });
-  
+
   // 找出只在第二张图中存在的文本
   texts2.forEach((textItem, index) => {
-    if (!textContents1.includes(textItem.DetectedText)) {
+    if (!textContents1.includes(normalizeText(textItem.DetectedText))) {
       // 计算多边形的边界框
       const bbox = calculateBoundingBox(textItem.Polygon);
       
@@ -154,7 +157,7 @@ function compareImageTexts(texts1, texts2) {
       });
     }
   });
-  
+
   return differences;
 }
 
