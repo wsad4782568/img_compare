@@ -917,82 +917,52 @@
 
     // 调用差异分析API
     function callAnalysisApi(data) {
-      // 模拟调用分析API
-      console.log('调用差异分析API:', data);
+      // 准备调用ADP智能体的文件对话API
+      console.log('调用ADP智能体文件对话API:', data);
       
-      return new Promise((resolve) => {
-        // 模拟API延迟
-        setTimeout(() => {
-          // 模拟分析结果
-          resolve({
-            differences: [
-              {
-                id: 1,
-                image1: {
-                  x: 120,
-                  y: 80,
-                  width: 180,
-                  height: 40,
-                  text: "2023年度报告"
-                },
-                image2: {
-                  x: 120,
-                  y: 80,
-                  width: 180,
-                  height: 40,
-                  text: "2024年度报告"
-                }
-              },
-              {
-                id: 2,
-                image1: {
-                  x: 150,
-                  y: 220,
-                  width: 120,
-                  height: 30,
-                  text: "总计: ¥500,000"
-                },
-                image2: {
-                  x: 150,
-                  y: 220,
-                  width: 120,
-                  height: 30,
-                  text: "总计: ¥650,000"
-                }
-              },
-              {
-                id: 3,
-                image1: {
-                  x: 180,
-                  y: 350,
-                  width: 90,
-                  height: 25,
-                  text: "负责人: 张三"
-                },
-                image2: {
-                  x: 180,
-                  y: 350,
-                  width: 90,
-                  height: 25,
-                  text: "负责人: 李四"
-                }
-              }
-            ]
-          });
-        }, 3000);
+      // 将OCR结果转换为文档格式
+      // const document1 = convertOcrToDocument(data.image1.ocrResult);
+      // const document2 = convertOcrToDocument(data.image2.ocrResult);
+      
+      // 调用后端API，由后端调用ADP智能体
+      return fetch('http://150.109.72.200/api/compare-documents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          image1Result: data.image1.ocrResult,
+          image2Result: data.image2.ocrResult,
+        })
+        // body: JSON.stringify({
+        //   document1: document1,
+        //   document2: document2,
+        //   image1Url: data.image1.url,
+        //   image2Url: data.image2.url
+        // })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('分析请求失败');
+        return response.json();
       });
-      
-      // 实际使用时应类似下面的代码：
-      // return fetch('/api/analyze-differences', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(data)
-      // }).then(response => {
-      //   if (!response.ok) throw new Error('分析请求失败');
-      //   return response.json();
-      // });
+    }
+
+    // 将OCR结果转换为文档格式
+    function convertOcrToDocument(ocrResult) {
+      // 根据您的OCR返回结构调整此函数
+      // 假设OCR返回格式为: { words: [{ text: string, x: number, y: number, width: number, height: number }] }
+      return {
+        content: ocrResult.words.map(word => word.text).join(' '),
+        textBlocks: ocrResult.words.map(word => ({
+          text: word.text,
+          position: {
+            x: word.x,
+            y: word.y,
+            width: word.width,
+            height: word.height
+          }
+        }))
+      };
     }
 
     // 显示结果页面
@@ -1034,16 +1004,19 @@
       state.analysisResults.differences.forEach(diff => {
         // 第一张图片的差异标记
         const marker1 = document.createElement('div');
-        marker1.className = 'diff-marker';
-        marker1.style.left = `${diff.image1.x}px`;
-        marker1.style.top = `${diff.image1.y}px`;
-        marker1.style.width = `${diff.image1.width}px`;
-        marker1.style.height = `${diff.image1.height}px`;
-        marker1.dataset.diffId = diff.id;
-        elements.diffMarkers1.appendChild(marker1);
+        if(diff.image1){
+          marker1.className = 'diff-marker';
+          marker1.style.left = `${diff.image1.x}px`;
+          marker1.style.top = `${diff.image1.y}px`;
+          marker1.style.width = `${diff.image1.width}px`;
+          marker1.style.height = `${diff.image1.height}px`;
+          marker1.dataset.diffId = diff.id;
+          elements.diffMarkers1.appendChild(marker1);
+        }
         
         // 第二张图片的差异标记
         const marker2 = document.createElement('div');
+        if(diff.image2){
         marker2.className = 'diff-marker';
         marker2.style.left = `${diff.image2.x}px`;
         marker2.style.top = `${diff.image2.y}px`;
@@ -1051,6 +1024,7 @@
         marker2.style.height = `${diff.image2.height}px`;
         marker2.dataset.diffId = diff.id;
         elements.diffMarkers2.appendChild(marker2);
+        }
       });
     }
 
@@ -1076,11 +1050,11 @@
           <div class="space-y-2 text-sm">
             <div>
               <span class="text-gray-500">基准图片:</span>
-              <span class="ml-2 font-medium">${diff.image1.text}</span>
+              <span class="ml-2 font-medium">${diff.image1 ? diff.image1.text : ''}</span>
             </div>
             <div>
               <span class="text-gray-500">对比图片:</span>
-              <span class="ml-2 font-medium text-danger">${diff.image2.text}</span>
+              <span class="ml-2 font-medium text-danger">${diff.image2 ? diff.image2.text : ''}</span>
             </div>
           </div>
         `;
@@ -1272,8 +1246,8 @@
         
         state.analysisResults.differences.forEach((diff, index) => {
           reportContent += `差异 #${index + 1}：\n`;
-          reportContent += `  基准图片：${diff.image1.text}\n`;
-          reportContent += `  对比图片：${diff.image2.text}\n\n`;
+          reportContent += `  基准图片：${diff.image1?.text || ''}\n`;
+          reportContent += `  对比图片：${diff.image2?.text || ''}\n\n`;
         });
       }
       

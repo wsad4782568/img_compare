@@ -86,6 +86,158 @@ app.post('/api/recognize-image', async (req, res) => {
     }
 });
 
+// 后端API示例（Node.js + Express）
+app.post('/api/compare-documents', async (req, res) => {
+  try {
+    const { image1Result, image2Result } = req.body;
+    
+    // 直接处理图片识别结果，计算差异
+    const differences = compareImageTexts(
+      image1Result.result.TextDetections, 
+      image2Result.result.TextDetections
+    );
+    
+    // 返回差异分析结果
+    res.json({ differences });
+  } catch (error) {
+    console.error('比较文档失败:', error);
+    res.status(500).json({ error: '分析失败', message: error.message });
+  }
+});
+
+// 比较两张图片中的文本差异
+function compareImageTexts(texts1, texts2) {
+  const differences = [];
+  
+  // 提取文本内容以便快速比较
+  const textContents1 = texts1.map(item => item.DetectedText);
+  const textContents2 = texts2.map(item => item.DetectedText);
+  
+  // 找出只在第一张图中存在的文本
+  texts1.forEach((textItem, index) => {
+    if (!textContents2.includes(textItem.DetectedText)) {
+      // 计算多边形的边界框
+      const bbox = calculateBoundingBox(textItem.Polygon);
+      
+      differences.push({
+        id: `only-in-1-${index}`,
+        type: 'only-in-first',
+        image1: {
+          x: bbox.x,
+          y: bbox.y,
+          width: bbox.width,
+          height: bbox.height,
+          text: textItem.DetectedText
+        },
+        image2: null
+      });
+    }
+  });
+  
+  // 找出只在第二张图中存在的文本
+  texts2.forEach((textItem, index) => {
+    if (!textContents1.includes(textItem.DetectedText)) {
+      // 计算多边形的边界框
+      const bbox = calculateBoundingBox(textItem.Polygon);
+      
+      differences.push({
+        id: `only-in-2-${index}`,
+        type: 'only-in-second',
+        image1: null,
+        image2: {
+          x: bbox.x,
+          y: bbox.y,
+          width: bbox.width,
+          height: bbox.height,
+          text: textItem.DetectedText
+        }
+      });
+    }
+  });
+  
+  // 找出内容不同但位置相近的文本（可能是修改过的内容）
+  // 这里使用简单的位置 proximity 检查，实际应用中可能需要更复杂的算法
+  texts1.forEach((text1, index1) => {
+    texts2.forEach((text2, index2) => {
+      if (text1.DetectedText !== text2.DetectedText && 
+          areTextItemsClose(text1, text2)) {
+        
+        const bbox1 = calculateBoundingBox(text1.Polygon);
+        const bbox2 = calculateBoundingBox(text2.Polygon);
+        
+        differences.push({
+          id: `diff-${index1}-${index2}`,
+          type: 'content-changed',
+          image1: {
+            x: bbox1.x,
+            y: bbox1.y,
+            width: bbox1.width,
+            height: bbox1.height,
+            text: text1.DetectedText
+          },
+          image2: {
+            x: bbox2.x,
+            y: bbox2.y,
+            width: bbox2.width,
+            height: bbox2.height,
+            text: text2.DetectedText
+          }
+        });
+      }
+    });
+  });
+  
+  return differences;
+}
+
+// 计算多边形的边界框
+function calculateBoundingBox(polygon) {
+  if (!polygon || polygon.length === 0) {
+    return { x: 0, y: 0, width: 0, height: 0 };
+  }
+  
+  // 找到最小和最大的X、Y坐标
+  const xs = polygon.map(point => point.X);
+  const ys = polygon.map(point => point.Y);
+  
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY
+  };
+}
+
+// 判断两个文本项是否位置相近
+function areTextItemsClose(text1, text2, threshold = 100) {
+  const bbox1 = calculateBoundingBox(text1.Polygon);
+  const bbox2 = calculateBoundingBox(text2.Polygon);
+  
+  // 计算两个边界框中心点之间的距离
+  const center1 = {
+    x: bbox1.x + bbox1.width / 2,
+    y: bbox1.y + bbox1.height / 2
+  };
+  
+  const center2 = {
+    x: bbox2.x + bbox2.width / 2,
+    y: bbox2.y + bbox2.height / 2
+  };
+  
+  // 欧氏距离
+  const distance = Math.sqrt(
+    Math.pow(center1.x - center2.x, 2) + 
+    Math.pow(center1.y - center2.y, 2)
+  );
+  
+  return distance < threshold;
+}
+
 // 测试接口
 app.get('/', (req, res) => {
     res.json({ 
