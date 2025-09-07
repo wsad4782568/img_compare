@@ -66,6 +66,7 @@ app.post('/api/recognize-image', async (req, res) => {
         const response = await new Promise((resolve, reject) => {
             client.GeneralAccurateOCR(reqOcr, function(err, response) {
                 if (err) {
+                    console.error('调用腾讯云OCR服务失败:', err);
                     reject(err);
                     return;
                 }
@@ -110,12 +111,13 @@ function compareImageTexts(texts1, texts2) {
   const differences = [];
 
   // 一个函数用于标准化文本，去除空格和符号
-  const normalizeText = (text) => text.replace(/[\s\W]+/g, '').toLowerCase();
+  const normalizeText = (text) => text.replace(/[^\u4e00-\u9fa5\w]+/g, '').toLowerCase();
 
   // 提取并标准化文本内容以便快速比较
   const textContents1 = texts1.map(item => normalizeText(item.DetectedText));
   const textContents2 = texts2.map(item => normalizeText(item.DetectedText));
-
+  console.log('imgtext_1 = ', textContents1)
+  console.log('imgtext_2 = ', textContents2)
   // 找出只在第一张图中存在的文本
   texts1.forEach((textItem, index) => {
     if (!textContents2.includes(normalizeText(textItem.DetectedText))) {
