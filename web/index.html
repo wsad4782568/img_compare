@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>图片差异对比分析系统</title>
+  <title>Image Difference Comparison Analysis System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <!-- 引入腾讯云COS SDK -->
@@ -70,14 +70,14 @@
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <i class="fa fa-picture-o text-primary text-2xl"></i>
-        <h1 class="text-xl md:text-2xl font-bold text-primary">图片差异对比分析系统</h1>
+        <h1 class="text-xl md:text-2xl font-bold text-primary">Image Difference Comparison Analysis System</h1>
       </div>
       <div class="hidden md:flex items-center space-x-4">
         <button id="helpBtn" class="text-gray-600 hover:text-primary transition-colors">
-          <i class="fa fa-question-circle mr-1"></i>帮助
+          <i class="fa fa-question-circle mr-1"></i>Help
         </button>
         <button id="aboutBtn" class="text-gray-600 hover:text-primary transition-colors">
-          <i class="fa fa-info-circle mr-1"></i>关于
+          <i class="fa fa-info-circle mr-1"></i>About
         </button>
       </div>
     </div>
@@ -88,8 +88,8 @@
     <!-- 上传页面 -->
     <section id="uploadPage" class="max-w-6xl mx-auto">
       <div class="text-center mb-8">
-        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-2">上传图片进行差异分析</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">请上传两张图片，系统将自动分析并标记出图片中的文字差异区域</p>
+        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-2">Upload Images for Difference Analysis</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Please upload two images, the system will automatically analyze and mark text difference areas in the images</p>
       </div>
       
       <div class="grid md:grid-cols-2 gap-8 mb-8">
@@ -97,14 +97,14 @@
         <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4 flex items-center">
             <i class="fa fa-image text-primary mr-2"></i>
-            基准图片
-            <span class="ml-2 text-sm font-normal text-gray-500">(第一张)</span>
+            Reference Image
+            <span class="ml-2 text-sm font-normal text-gray-500">(First)</span>
           </h3>
           
           <div id="uploadArea1" class="upload-area border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors duration-300 mb-4 min-h-[200px] flex flex-col items-center justify-center">
             <i class="fa fa-cloud-upload text-4xl text-gray-400 mb-3"></i>
-            <p class="text-gray-500 mb-2">点击或拖拽图片到此处上传</p>
-            <p class="text-xs text-gray-400">支持 JPG、PNG、WEBP 格式，最大 10MB</p>
+            <p class="text-gray-500 mb-2">Click or drag image here to upload</p>
+            <p class="text-xs text-gray-400">Supports JPG, PNG, WEBP formats, max 10MB</p>
             <input type="file" id="imageInput1" accept="image/jpeg, image/png, image/webp" class="hidden" />
           </div>
           
@@ -121,10 +121,10 @@
           
           <!-- OCR状态 -->
           <div id="ocrProcessing1" class="ocr-status text-primary">
-            <i class="fa fa-spinner fa-spin mr-1"></i> 正在识别图片中的文字...
+            <i class="fa fa-spinner fa-spin mr-1"></i> Recognizing text in image...
           </div>
           <div id="ocrSuccess1" class="ocr-status text-success">
-            <i class="fa fa-check-circle mr-1"></i> 文字识别完成
+            <i class="fa fa-check-circle mr-1"></i> Text recognition completed
           </div>
           <div id="ocrError1" class="ocr-status text-danger">
             <i class="fa fa-exclamation-circle mr-1"></i> <span id="ocrErrorMessage1"></span>
@@ -133,7 +133,7 @@
           <!-- 预览区域 -->
           <div id="previewContainer1" class="hidden">
             <div class="relative">
-              <img id="previewImage1" src="" alt="基准图片预览" class="max-w-full max-h-[300px] mx-auto rounded-lg" />
+              <img id="previewImage1" src="" alt="Reference image preview" class="max-w-full max-h-[300px] mx-auto rounded-lg" />
               <button id="removeImage1" class="absolute -top-3 -right-3 bg-danger text-white rounded-full w-6 h-6 flex items-center justify-center shadow-md hover:bg-danger/80 transition-colors">
                 <i class="fa fa-times text-xs"></i>
               </button>
@@ -142,7 +142,7 @@
           
           <!-- 上传状态提示 -->
           <div id="uploadSuccess1" class="hidden text-success text-sm mt-2 flex items-center justify-center">
-            <i class="fa fa-check-circle mr-1"></i> 上传成功
+            <i class="fa fa-check-circle mr-1"></i> Upload successful
           </div>
           <div id="uploadError1" class="hidden text-danger text-sm mt-2 flex items-center justify-center">
             <i class="fa fa-exclamation-circle mr-1"></i> <span id="errorMessage1"></span>
@@ -153,14 +153,14 @@
         <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4 flex items-center">
             <i class="fa fa-image text-primary mr-2"></i>
-            对比图片
-            <span class="ml-2 text-sm font-normal text-gray-500">(第二张)</span>
+            Comparison Image
+            <span class="ml-2 text-sm font-normal text-gray-500">(Second)</span>
           </h3>
           
           <div id="uploadArea2" class="upload-area border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors duration-300 mb-4 min-h-[200px] flex flex-col items-center justify-center">
             <i class="fa fa-cloud-upload text-4xl text-gray-400 mb-3"></i>
-            <p class="text-gray-500 mb-2">点击或拖拽图片到此处上传</p>
-            <p class="text-xs text-gray-400">支持 JPG、PNG、WEBP 格式，最大 10MB</p>
+            <p class="text-gray-500 mb-2">Click or drag image here to upload</p>
+            <p class="text-xs text-gray-400">Supports JPG, PNG, WEBP formats, max 10MB</p>
             <input type="file" id="imageInput2" accept="image/jpeg, image/png, image/webp" class="hidden" />
           </div>
           
@@ -177,10 +177,10 @@
           
           <!-- OCR状态 -->
           <div id="ocrProcessing2" class="ocr-status text-primary">
-            <i class="fa fa-spinner fa-spin mr-1"></i> 正在识别图片中的文字...
+            <i class="fa fa-spinner fa-spin mr-1"></i> Recognizing text in image...
           </div>
           <div id="ocrSuccess2" class="ocr-status text-success">
-            <i class="fa fa-check-circle mr-1"></i> 文字识别完成
+            <i class="fa fa-check-circle mr-1"></i> Text recognition completed
           </div>
           <div id="ocrError2" class="ocr-status text-danger">
             <i class="fa fa-exclamation-circle mr-1"></i> <span id="ocrErrorMessage2"></span>
@@ -189,7 +189,7 @@
           <!-- 预览区域 -->
           <div id="previewContainer2" class="hidden">
             <div class="relative">
-              <img id="previewImage2" src="" alt="对比图片预览" class="max-w-full max-h-[300px] mx-auto rounded-lg" />
+              <img id="previewImage2" src="" alt="Comparison image preview" class="max-w-full max-h-[300px] mx-auto rounded-lg" />
               <button id="removeImage2" class="absolute -top-3 -right-3 bg-danger text-white rounded-full w-6 h-6 flex items-center justify-center shadow-md hover:bg-danger/80 transition-colors">
                 <i class="fa fa-times text-xs"></i>
               </button>
@@ -198,7 +198,7 @@
           
           <!-- 上传状态提示 -->
           <div id="uploadSuccess2" class="hidden text-success text-sm mt-2 flex items-center justify-center">
-            <i class="fa fa-check-circle mr-1"></i> 上传成功
+            <i class="fa fa-check-circle mr-1"></i> Upload successful
           </div>
           <div id="uploadError2" class="hidden text-danger text-sm mt-2 flex items-center justify-center">
             <i class="fa fa-exclamation-circle mr-1"></i> <span id="errorMessage2"></span>
@@ -209,24 +209,24 @@
       <!-- 分析按钮 -->
       <div class="text-center">
         <button id="analyzeBtn" class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" disabled>
-          <i class="fa fa-line-chart mr-2"></i>开始分析差异
+          <i class="fa fa-line-chart mr-2"></i>Start Difference Analysis
         </button>
       </div>
       
       <!-- 分析进度 -->
       <div id="analysisProgress" class="hidden mt-8 max-w-2xl mx-auto text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-        <h3 class="text-lg font-medium mb-2">正在分析图片差异...</h3>
-        <p class="text-gray-600">请稍候，系统正在处理您的图片并进行详细对比分析</p>
+        <h3 class="text-lg font-medium mb-2">Analyzing image differences...</h3>
+        <p class="text-gray-600">Please wait, the system is processing your images and performing detailed comparison analysis</p>
       </div>
     </section>
     
     <!-- 结果展示页面 -->
     <section id="resultPage" class="hidden max-w-7xl mx-auto">
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold">差异分析结果</h2>
+        <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold">Difference Analysis Results</h2>
         <button id="backToUploadBtn" class="btn-secondary">
-          <i class="fa fa-arrow-left mr-2"></i>返回上传
+          <i class="fa fa-arrow-left mr-2"></i>Back to Upload
         </button>
       </div>
       
@@ -236,11 +236,11 @@
         <div class="card p-4">
           <h3 class="text-lg font-semibold mb-3 flex items-center">
             <i class="fa fa-image text-primary mr-2"></i>
-            基准图片
+            Reference Image
           </h3>
           
           <div class="image-container relative" style="height: 800px;">
-            <img id="resultImage1" src="" alt="基准图片" class="absolute top-0 left-0 max-w-none" />
+            <img id="resultImage1" src="" alt="Reference image" class="absolute top-0 left-0 max-w-none" />
             
             <!-- 差异标记将动态添加到这里 -->
             <div id="diffMarkers1" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
@@ -251,11 +251,11 @@
         <div class="card p-4">
           <h3 class="text-lg font-semibold mb-3 flex items-center">
             <i class="fa fa-image text-primary mr-2"></i>
-            对比图片
+            Comparison Image
           </h3>
           
           <div class="image-container relative" style="height: 800px;">
-            <img id="resultImage2" src="" alt="对比图片" class="absolute top-0 left-0 max-w-none" />
+            <img id="resultImage2" src="" alt="Comparison image" class="absolute top-0 left-0 max-w-none" />
             
             <!-- 差异标记将动态添加到这里 -->
             <div id="diffMarkers2" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
@@ -265,31 +265,22 @@
       
       <!-- 图片操作工具栏 -->
       <div class="flex flex-wrap justify-center gap-4 mb-8 bg-white p-4 rounded-lg shadow-sm">
-        <!-- <button id="zoomInBtn" class="btn-secondary flex items-center">
-          <i class="fa fa-search-plus mr-2"></i>放大
-        </button>
-        <button id="zoomOutBtn" class="btn-secondary flex items-center">
-          <i class="fa fa-search-minus mr-2"></i>缩小
-        </button> -->
         <button id="resetZoomBtn" class="btn-secondary flex items-center">
-          <i class="fa fa-refresh mr-2"></i>重置视图
+          <i class="fa fa-refresh mr-2"></i>Reset View
         </button>
-        <!-- <button id="fitToScreenBtn" class="btn-secondary flex items-center">
-          <i class="fa fa-expand mr-2"></i>适应屏幕
-        </button> -->
-        <span class="text-gray-600 self-center ml-4">提示: 可拖拽图片查看不同区域</span>
+        <span class="text-gray-600 self-center ml-4">Tip: You can drag images to view different areas</span>
       </div>
       
       <!-- 差异列表 -->
       <div class="card p-6 mb-8">
         <h3 class="text-lg font-semibold mb-4 flex items-center">
           <i class="fa fa-list-alt text-primary mr-2"></i>
-          文字差异详情
+          Text Difference Details
         </h3>
         
         <div id="noDifferences" class="hidden text-center py-10">
           <i class="fa fa-check-circle text-success text-4xl mb-3"></i>
-          <p class="text-gray-600">未发现两张图片之间有文字差异</p>
+          <p class="text-gray-600">No text differences found between the two images</p>
         </div>
         
         <div id="differencesList" class="space-y-4">
@@ -300,10 +291,10 @@
       <!-- 分析结果操作 -->
       <div class="flex flex-wrap justify-center gap-4">
         <button id="downloadReportBtn" class="btn-primary flex items-center">
-          <i class="fa fa-download mr-2"></i>下载分析报告
+          <i class="fa fa-download mr-2"></i>Download Analysis Report
         </button>
         <button id="newAnalysisBtn" class="btn-secondary flex items-center">
-          <i class="fa fa-plus mr-2"></i>新的分析
+          <i class="fa fa-plus mr-2"></i>New Analysis
         </button>
       </div>
     </section>
@@ -311,19 +302,19 @@
     <!-- 空状态/错误状态 -->
     <div id="emptyState" class="hidden text-center py-16 max-w-2xl mx-auto">
       <i class="fa fa-picture-o text-gray-300 text-6xl mb-4"></i>
-      <h3 class="text-xl font-semibold mb-2">尚未进行图片分析</h3>
-      <p class="text-gray-500 mb-6">请上传两张图片并点击"开始分析差异"按钮</p>
+      <h3 class="text-xl font-semibold mb-2">No image analysis performed yet</h3>
+      <p class="text-gray-500 mb-6">Please upload two images and click the "Start Difference Analysis" button</p>
       <button id="startAnalysisBtn" class="btn-primary">
-        <i class="fa fa-upload mr-2"></i>上传图片
+        <i class="fa fa-upload mr-2"></i>Upload Images
       </button>
     </div>
     
     <div id="errorState" class="hidden text-center py-16 max-w-2xl mx-auto">
       <i class="fa fa-exclamation-triangle text-warning text-6xl mb-4"></i>
-      <h3 class="text-xl font-semibold mb-2">分析失败</h3>
-      <p id="errorStateMessage" class="text-gray-500 mb-6">很抱歉，图片分析过程中出现错误，请重试</p>
+      <h3 class="text-xl font-semibold mb-2">Analysis Failed</h3>
+      <p id="errorStateMessage" class="text-gray-500 mb-6">Sorry, an error occurred during image analysis, please try again</p>
       <button id="retryAnalysisBtn" class="btn-primary">
-        <i class="fa fa-refresh mr-2"></i>重试
+        <i class="fa fa-refresh mr-2"></i>Retry
       </button>
     </div>
   </main>
@@ -331,7 +322,7 @@
   <!-- 页脚 -->
   <footer class="bg-white border-t border-gray-200 py-6">
     <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
-      <p>© 2023 图片差异对比分析系统 | 基于腾讯云OCR与ADP服务构建</p>
+      <p>© 2023 Image Difference Comparison Analysis System | Built with Tencent Cloud OCR and ADP Services</p>
     </div>
   </footer>
 
@@ -340,24 +331,24 @@
     <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-6 border-b">
         <div class="flex justify-between items-center">
-          <h3 class="text-xl font-bold">使用帮助</h3>
+          <h3 class="text-xl font-bold">User Guide</h3>
           <button id="closeHelpModal" class="text-gray-500 hover:text-gray-700">
             <i class="fa fa-times text-xl"></i>
           </button>
         </div>
       </div>
       <div class="p-6">
-        <h4 class="font-semibold text-lg mb-3">如何使用系统进行图片差异分析？</h4>
+        <h4 class="font-semibold text-lg mb-3">How to use the system for image difference analysis?</h4>
         <ol class="list-decimal pl-5 space-y-3 mb-4">
-          <li>在上传区域分别上传基准图片和对比图片</li>
-          <li>系统会自动上传图片并识别其中的文字</li>
-          <li>两张图片都处理完成后，点击"开始分析差异"按钮</li>
-          <li>系统将自动处理并展示分析结果</li>
-          <li>在结果页面，您可以查看标记的差异区域和详细的文字差异</li>
+          <li>Upload a reference image and a comparison image in their respective upload areas</li>
+          <li>The system will automatically upload the images and recognize text within them</li>
+          <li>After both images are processed, click the "Start Difference Analysis" button</li>
+          <li>The system will automatically process and display the analysis results</li>
+          <li>On the results page, you can view marked difference areas and detailed text differences</li>
         </ol>
         
-        <h4 class="font-semibold text-lg mb-3">支持的图片格式</h4>
-        <p class="mb-4">系统支持 JPG、PNG 和 WEBP 格式的图片，单张图片大小不超过 10MB。</p>
+        <h4 class="font-semibold text-lg mb-3">Supported Image Formats</h4>
+        <p class="mb-4">The system supports JPG, PNG, and WEBP format images, with a maximum file size of 10MB per image.</p>
       </div>
     </div>
   </div>
@@ -367,7 +358,7 @@
     <div class="bg-white rounded-xl max-w-md w-full">
       <div class="p-6 border-b">
         <div class="flex justify-between items-center">
-          <h3 class="text-xl font-bold">关于系统</h3>
+          <h3 class="text-xl font-bold">About System</h3>
           <button id="closeAboutModal" class="text-gray-500 hover:text-gray-700">
             <i class="fa fa-times text-xl"></i>
           </button>
@@ -376,16 +367,16 @@
       <div class="p-6">
         <div class="text-center mb-4">
           <i class="fa fa-picture-o text-primary text-4xl mb-2"></i>
-          <h4 class="text-lg font-semibold">图片差异对比分析系统</h4>
-          <p class="text-gray-500 text-sm">版本 1.0.0</p>
+          <h4 class="text-lg font-semibold">Image Difference Comparison Analysis System</h4>
+          <p class="text-gray-500 text-sm">Version 1.0.0</p>
         </div>
         
         <p class="text-gray-600 mb-4">
-          本系统用于对比分析两张图片中的文字差异，自动标记差异区域并展示详细的文字变化。
+          This system is used to compare and analyze text differences between two images, automatically marking difference areas and displaying detailed text changes.
         </p>
         
         <p class="text-gray-600">
-          系统基于腾讯云OCR服务和ADP服务构建，提供高效准确的图片文字识别与差异分析。
+          The system is built with Tencent Cloud OCR services and ADP services, providing efficient and accurate image text recognition and difference analysis.
         </p>
       </div>
     </div>
@@ -526,7 +517,7 @@
         return true;
       } catch (error) {
         console.error('COS初始化失败:', error);
-        showGlobalError('无法连接到对象存储服务，请稍后重试');
+        showGlobalError('Unable to connect to object storage service, please try again later');
         return false;
       }
     }
@@ -653,13 +644,13 @@
       // 验证文件类型
       const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        showError(imageId, '不支持的文件格式，请上传 JPG、PNG 或 WEBP 格式的图片');
+        showError(imageId, 'Unsupported file format, please upload JPG, PNG or WEBP format images');
         return;
       }
       
       // 验证文件大小 (10MB)
       if (file.size > 10 * 1024 * 1024) {
-        showError(imageId, '文件大小超过限制，请上传不超过 10MB 的图片');
+        showError(imageId, 'File size exceeds limit, please upload images no larger than 10MB');
         return;
       }
       
@@ -698,7 +689,7 @@
     // 上传文件到腾讯云COS
     function uploadToCOS(file, imageId) {
       if (!state.cos) {
-        showError(imageId, '对象存储服务初始化失败，请刷新页面重试');
+        showError(imageId, 'Object storage service initialization failed, please refresh the page and try again');
         return;
       }
       
@@ -732,7 +723,7 @@
         if (err) {
           // 上传失败
           console.error('COS上传失败:', err);
-          showError(imageId, `上传失败: ${err.Message || '未知错误'}`);
+          showError(imageId, `Upload failed: ${err.Message || 'Unknown error'}`);
           return;
         }
         
@@ -777,6 +768,11 @@
         return response.json();
       })
       .then(result => {
+        // 检查后端返回的错误
+        if (result.error) {
+          throw new Error(result.error);
+        }
+        
         // 隐藏处理状态，显示成功状态
         elements[`ocrProcessing${imageId}`].classList.add('hidden');
         elements[`ocrSuccess${imageId}`].classList.remove('hidden');
@@ -794,11 +790,29 @@
         // 隐藏处理状态，显示错误状态
         elements[`ocrProcessing${imageId}`].classList.add('hidden');
         elements[`ocrError${imageId}`].classList.remove('hidden');
-        elements[`ocrErrorMessage${imageId}`].textContent = `文字识别失败: ${error.message || '未知错误'}`;
+        
+        // 根据错误类型显示不同的错误信息
+        let errorMessage = 'Text recognition failed: ';
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          errorMessage += 'Network connection failed, please check your internet connection';
+        } else if (error.message.includes('429')) {
+          errorMessage += 'Too many requests, please try again later';
+        } else if (error.message.includes('500')) {
+          errorMessage += 'Server internal error, please try again later';
+        } else if (error.message.includes('timeout')) {
+          errorMessage += 'Request timeout, please try again';
+        } else {
+          errorMessage += error.message || 'Unknown error';
+        }
+        
+        elements[`ocrErrorMessage${imageId}`].textContent = errorMessage;
         
         // 重置OCR状态
         state.images[imageId].ocrCompleted = false;
         state.images[imageId].ocrResult = null;
+        
+        // 检查分析按钮状态
+        checkAnalyzeButton();
       });
     }
 
@@ -806,8 +820,8 @@
     function removeImage(imageId) {
       // 如果已经上传到COS，删除COS中的文件
       if (state.images[imageId].uploaded && state.images[imageId].cosKey && state.cos) {
-        const bucket = 'your-bucket-name';
-        const region = 'ap-guangzhou';
+        const bucket = 'dfi-image-1365084971';
+        const region = 'ap-hongkong';
         
         state.cos.deleteObject({
           Bucket: bucket,
@@ -911,7 +925,7 @@
           console.error('分析失败:', error);
           elements.analysisProgress.classList.add('hidden');
           elements.errorState.classList.remove('hidden');
-          elements.errorStateMessage.textContent = `分析失败: ${error.message || '未知错误'}`;
+          elements.errorStateMessage.textContent = `Analysis failed: ${error.message || 'Unknown error'}`;
         });
     }
 
@@ -942,7 +956,7 @@
         // })
       })
       .then(response => {
-        if (!response.ok) throw new Error('分析请求失败');
+        if (!response.ok) throw new Error('Analysis request failed');
         return response.json();
       });
     }
@@ -1046,18 +1060,18 @@
         diffItem.className = 'p-4 border border-gray-100 rounded-lg hover:border-primary/30 hover:bg-primary/5 transition-colors';
         diffItem.innerHTML = `
           <div class="flex justify-between items-start mb-2">
-            <h4 class="font-semibold">差异 #${index + 1}</h4>
+            <h4 class="font-semibold">Difference #${index + 1}</h4>
             <button class="text-primary hover:text-primary/80 text-sm focus:outline-none" data-diff-id="${diff.id}">
-              <i class="fa fa-eye mr-1"></i>查看位置
+              <i class="fa fa-eye mr-1"></i>View Location
             </button>
           </div>
           <div class="space-y-2 text-sm">
             <div>
-              <span class="text-gray-500">基准图片:</span>
+              <span class="text-gray-500">Reference Image:</span>
               <span class="ml-2 font-medium">${diff.image1 ? diff.image1.text : ''}</span>
             </div>
             <div>
-              <span class="text-gray-500">对比图片:</span>
+              <span class="text-gray-500">Comparison Image:</span>
               <span class="ml-2 font-medium text-danger">${diff.image2 ? diff.image2.text : ''}</span>
             </div>
           </div>
@@ -1239,19 +1253,19 @@
       if (!state.analysisResults) return;
       
       // 模拟生成报告内容
-      let reportContent = "图片差异对比分析报告\n";
-      reportContent += "========================\n\n";
-      reportContent += `分析时间: ${new Date().toLocaleString()}\n\n`;
+      let reportContent = "Image Difference Comparison Analysis Report\n";
+      reportContent += "==========================================\n\n";
+      reportContent += `Analysis Time: ${new Date().toLocaleString()}\n\n`;
       
       if (state.analysisResults.differences.length === 0) {
-        reportContent += "未发现两张图片之间有文字差异。\n";
+        reportContent += "No text differences found between the two images.\n";
       } else {
-        reportContent += `共发现 ${state.analysisResults.differences.length} 处差异：\n\n`;
+        reportContent += `Total ${state.analysisResults.differences.length} differences found:\n\n`;
         
         state.analysisResults.differences.forEach((diff, index) => {
-          reportContent += `差异 #${index + 1}：\n`;
-          reportContent += `  基准图片：${diff.image1?.text || ''}\n`;
-          reportContent += `  对比图片：${diff.image2?.text || ''}\n\n`;
+          reportContent += `Difference #${index + 1}:\n`;
+          reportContent += `  Reference Image: ${diff.image1?.text || ''}\n`;
+          reportContent += `  Comparison Image: ${diff.image2?.text || ''}\n\n`;
         });
       }
       
@@ -1260,7 +1274,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `图片差异分析报告_${new Date().getTime()}.txt`;
+      a.download = `Image_Difference_Analysis_Report_${new Date().getTime()}.txt`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
