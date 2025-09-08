@@ -4,6 +4,7 @@
   "author": "tencent-cloud",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.11.0",
     "body-parser": "^2.2.0",
     "express": "^5.1.0",
     "tencentcloud-sdk-nodejs-intl-en": "^3.0.1249",

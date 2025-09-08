@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const tencentcloud = require("tencentcloud-sdk-nodejs-intl-en");
+const axios = require('axios');
 
 // 初始化Express应用
 const app = express();
@@ -93,7 +94,7 @@ app.post('/api/compare-documents', async (req, res) => {
     const { image1Result, image2Result } = req.body;
     
     // 直接处理图片识别结果，计算差异
-    const differences = compareImageTexts(
+    const differences = await compareImageTexts(
       image1Result.result.TextDetections, 
       image2Result.result.TextDetections
     );
@@ -107,8 +108,10 @@ app.post('/api/compare-documents', async (req, res) => {
 });
 
 // 比较两张图片中的文本差异
-function compareImageTexts(texts1, texts2) {
+async function compareImageTexts(texts1, texts2) {
   const differences = [];
+  const imgtext_1 = [];
+  const imgtext_2 = [];
 
   // 一个函数用于标准化文本，去除空格和符号
   const normalizeText = (text) => text.replace(/[^\u4e00-\u9fa5\w]+/g, '').toLowerCase();
@@ -116,51 +119,94 @@ function compareImageTexts(texts1, texts2) {
   // 提取并标准化文本内容以便快速比较
   const textContents1 = texts1.map(item => normalizeText(item.DetectedText));
   const textContents2 = texts2.map(item => normalizeText(item.DetectedText));
-  console.log('imgtext_1 = ', textContents1)
-  console.log('imgtext_2 = ', textContents2)
+
   // 找出只在第一张图中存在的文本
   texts1.forEach((textItem, index) => {
     if (!textContents2.includes(normalizeText(textItem.DetectedText))) {
-      // 计算多边形的边界框
-      const bbox = calculateBoundingBox(textItem.Polygon);
-      
-      differences.push({
-        id: `only-in-1-${index}`,
-        type: 'only-in-first',
-        image1: {
-          x: bbox.x,
-          y: bbox.y,
-          width: bbox.width,
-          height: bbox.height,
-          text: textItem.DetectedText
-        },
-        image2: null
-      });
+      imgtext_1.push(textItem.DetectedText)
     }
   });
 
   // 找出只在第二张图中存在的文本
   texts2.forEach((textItem, index) => {
     if (!textContents1.includes(normalizeText(textItem.DetectedText))) {
-      // 计算多边形的边界框
-      const bbox = calculateBoundingBox(textItem.Polygon);
-      
-      differences.push({
-        id: `only-in-2-${index}`,
-        type: 'only-in-second',
-        image1: null,
-        image2: {
-          x: bbox.x,
-          y: bbox.y,
-          width: bbox.width,
-          height: bbox.height,
-          text: textItem.DetectedText
-        }
-      });
+      imgtext_2.push(textItem.DetectedText)
     }
   });
 
+  // 调用ADP继续对比差异
+  const responseData = await postAiChat(`imgtext_1=${JSON.stringify(imgtext_1)}
+  imgtext_2=${JSON.stringify(imgtext_2)}`)
+  console.log('responseData = ', responseData)
+  const result = parseComplexData(responseData);
+    if (result) {
+          texts1.forEach((textItem, index) => {
+            if(result.imgtext_1.includes(textItem.DetectedText)) {
+                // 计算多边形的边界框
+                const bbox = calculateBoundingBox(textItem.Polygon);
+                differences.push({
+                    id: `only-in-1-${index}`,
+                    type: 'only-in-first',
+                    image1: {
+                    x: bbox.x,
+                    y: bbox.y,
+                    width: bbox.width,
+                    height: bbox.height,
+                    text: textItem.DetectedText
+                    },
+                    image2: null
+                });
+            }
+        });
+        texts2.forEach((textItem, index) => {
+            if(result.imgtext_2.includes(textItem.DetectedText)) {
+                // 计算多边形的边界框
+                const bbox = calculateBoundingBox(textItem.Polygon);
+                differences.push({
+                    id: `only-in-2-${index}`,
+                    type: 'only-in-second',
+                    image1: null,
+                    image2: {
+                    x: bbox.x,
+                    y: bbox.y,
+                    width: bbox.width,
+                    height: bbox.height,
+                    text: textItem.DetectedText
+                    }
+                });
+            }
+        });
+    }
+
   return differences;
+}
+
+// 请求ADP的借口
+async function postAiChat(params) {
+  try {
+    // 生成随机的sessionId
+    const sessionId = 'session-1757343169002' //generateUUID(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
+    // 准备请求数据
+    const requestData = {
+      content: params,
+      sessionId: sessionId
+    };
+    // 发送POST请求到AI聊天接口
+    const response = await axios.post(
+      'https://mrtest.yz-intelligence.com/ai/maindray/ai_test/chat',
+      requestData,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    // 返回接口响应数据
+    return response.data;
+  } catch (error) {
+    console.error('调用AI聊天接口失败:', error.response?.data || error.message);
+    throw new Error('调用AI聊天接口失败: ' + (error.response?.data?.message || error.message));
+  }
 }
 
 // 计算多边形的边界框
@@ -225,3 +271,65 @@ app.listen(port, host, () => {
     console.log(`OCR识别服务已启动，监听地址: http://${host}:${port}`);
     console.log(`通过IP访问API: http://150.109.72.200:${port}/api/recognize-image`);
 });
+
+// utils工具函数
+// 生成随机ID
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+/**
+ * 解析原始数据字符串
+ * 步骤：1. 提取有效data块 2. 解析content 3. 转换为JS对象
+ */
+function parseComplexData(rawStr) {
+  try {
+    // 步骤1：分割原始字符串，提取包含content的有效data块
+    // 按换行分割，过滤空行和[DONE]块
+    const dataBlocks = rawStr.split('\n')
+      .map(block => block.trim())
+      .filter(block => block.startsWith('data:') && !block.includes('[DONE]'));
+
+    if (dataBlocks.length === 0) {
+      throw new Error("未找到有效数据块");
+    }
+
+    // 步骤2：处理有效data块（取第一个有效块）
+    const validDataBlock = dataBlocks[0];
+    // 移除'data:'前缀，得到JSON字符串
+    const jsonStr = validDataBlock.replace(/^data:/, '');
+
+    // 步骤3：解析外层JSON，获取content
+    const outerData = JSON.parse(jsonStr);
+    const content = outerData.content;
+    if (!content) {
+      throw new Error("content字段不存在");
+    }
+
+    // 步骤4：处理content中的数组定义（转换为JSON格式）
+    let parsedContent = content
+      // 将变量定义转为JSON键值对（imgtext_1 = [...] → "imgtext_1": [...]）
+      .replace(/(\w+)\s*=\s*/g, '"$1": ')
+      // 在数组结束与下一个键之间添加逗号（修复JSON语法）
+      .replace(/]\s+"/g, '], "');
+
+    // 包裹为完整JSON对象
+    parsedContent = `{ ${parsedContent} }`;
+    // 清理可能的多余逗号
+    parsedContent = parsedContent.replace(/,\s*([}\]])/g, ' $1');
+
+    // 步骤5：解析最终结果
+    return JSON.parse(parsedContent);
+
+  } catch (error) {
+    console.error('解析失败:', error);
+    console.log('错误位置数据:', error.message.includes('JSON') ? jsonStr : content || rawStr);
+    return null;
+  }
+}
+// 执行转换
+// const result = parseComplexData(rawString);
