@@ -1143,16 +1143,16 @@
       });
     }
 
-    // 高亮显示差异标记
+    // 高亮显示差异标记 - 修改为蓝色框
     function highlightDiffMarker(diffId) {
       // 移除所有高亮
       document.querySelectorAll('.diff-marker').forEach(marker => {
-        marker.classList.remove('ring-4', 'ring-danger/50', 'animate-pulse');
+        marker.classList.remove('ring-4', 'ring-danger/50', 'ring-primary/50', 'animate-pulse');
       });
       
-      // 添加高亮到指定差异
+      // 添加高亮到指定差异（使用蓝色）
       document.querySelectorAll(`.diff-marker[data-diff-id="${diffId}"]`).forEach(marker => {
-        marker.classList.add('ring-4', 'ring-danger/50', 'animate-pulse');
+        marker.classList.add('ring-4', 'ring-primary/50', 'animate-pulse');
         
         // 自动滚动到标记位置
         const rect = marker.getBoundingClientRect();
