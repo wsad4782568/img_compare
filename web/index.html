@@ -71,6 +71,29 @@
       }
     }
   </style>
+  <!-- 自定义动画 -->
+  <style>
+    /* 1. 定义省略号循环动画：逐字显示 1→2→3 个点 */
+    @keyframes ellipsis {
+      0% { content: ""; }       /* 0秒：无点 */
+      33% { content: "."; }     /* 0.6秒：1个点 */
+      66% { content: ".."; }    /* 1.2秒：2个点 */
+      100% { content: "..."; }  /* 1.8秒：3个点 */
+    }
+
+    /* 2. 绑定动画到类：配合 Tailwind 控制样式和动画行为 */
+    .animate-ellipsis::after {
+      /* 基础样式：与原文字对齐、同色 */
+      content: "";
+      display: inline-block;
+      vertical-align: middle; /* 保证和 "Processing" 文字垂直居中 */
+      color: inherit;         /* 继承标题文字颜色，避免色差 */
+      margin-left: 2px;       /* 与文字保留微小间距，更美观 */
+      
+      /* 动画控制：1.8秒循环，匀速过渡 */
+      animation: ellipsis 1.8s linear infinite;
+    }
+  </style>
 </head>
 
 <body class="font-inter bg-gray-50 text-dark min-h-screen flex flex-col">
@@ -225,7 +248,9 @@
       <!-- 分析进度 -->
       <div id="analysisProgress" class="hidden mt-8 max-w-2xl mx-auto text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-        <h3 class="text-lg font-medium mb-2">Analyzing image differences...</h3>
+        <h3 class="text-lg font-medium mb-2">Analyzing image differences</h3>
+        <!-- 动态省略号：通过伪元素 + 自定义动画实现 -->
+        <span class="inline-block vertical-align-middle animate-ellipsis"></span>
         <p class="text-gray-600">Please wait, the system is processing your images and performing detailed comparison analysis</p>
       </div>
     </section>
@@ -395,7 +420,11 @@
   <div id="loadingModal" class="modal-overlay hidden">
     <div class="bg-white rounded-xl p-6 max-w-sm w-full text-center">
       <div class="loading-spinner mx-auto mb-4 border-primary"></div>
-      <h3 id="loadingTitle" class="text-lg font-semibold mb-2">Processing...</h3>
+      <h3 id="loadingTitle" class="text-lg font-semibold">
+        processing
+      </h3>
+      <!-- 动态省略号：通过伪元素 + 自定义动画实现 -->
+      <span class="inline-block vertical-align-middle font-semibold animate-ellipsis mb-2"></span>
       <p id="loadingMessage" class="text-gray-600">Please wait while we process your request</p>
     </div>
   </div>
@@ -535,11 +564,11 @@
       errorModal: document.getElementById('errorModal'),
       errorModalMessage: document.getElementById('errorModalMessage'),
       errorModalClose: document.getElementById('errorModalClose'),
-      errorModalRetry: document.getElementById('errorModalRetry')
+      // errorModalRetry: document.getElementById('errorModalRetry')
     };
 
     // Loading控制函数
-    function showLoading(title = 'Processing...', message = 'Please wait while we process your request') {
+    function showLoading(title = 'Processing', message = 'Please wait while we process your request') {
       elements.loadingTitle.textContent = title;
       elements.loadingMessage.textContent = message;
       elements.loadingModal.classList.remove('hidden');
@@ -557,9 +586,9 @@
       
       if (retryCallback) {
         state.currentRetryAction = retryCallback;
-        elements.errorModalRetry?.classList.remove('hidden');
+        // elements.errorModalRetry?.classList.remove('hidden');
       } else {
-        elements.errorModalRetry?.classList.add('hidden');
+        // elements.errorModalRetry?.classList.add('hidden');
       }
       
       elements.errorModal.classList.remove('hidden');
@@ -573,7 +602,7 @@
     }
 
     // HTTP请求封装函数
-    async function apiRequest(url, options = {}, loadingTitle = 'Processing...', loadingMessage) {
+    async function apiRequest(url, options = {}, loadingTitle = 'Processing', loadingMessage) {
       loadingMessage && showLoading(loadingTitle, loadingMessage);
       
       try {
@@ -689,12 +718,12 @@
       
       // Error模态框事件
       elements.errorModalClose.addEventListener('click', hideError);
-      elements.errorModalRetry.addEventListener('click', () => {
-        hideError();
-        if (state.currentRetryAction) {
-          state.currentRetryAction();
-        }
-      });
+      // elements.errorModalRetry.addEventListener('click', () => {
+      //   hideError();
+      //   if (state.currentRetryAction) {
+      //     state.currentRetryAction();
+      //   }
+      // });
       
       // 点击模态框外部关闭
       elements.helpModal.addEventListener('click', (e) => {
@@ -1031,7 +1060,7 @@
           image1Result: data.image1.ocrResult,
           image2Result: data.image2.ocrResult,
         })
-      }, 'Analyzing Differences...', 'Comparing images and identifying text differences...');
+      }, 'Analyzing Differences', 'Comparing images and identifying text differences...');
     }
 
     // 显示结果页面
@@ -1293,10 +1322,11 @@
 
     // 下载分析报告
     function downloadReport() {
+      console.log('analysisResults', state.analysisResults)
       if (!state.analysisResults) return;
       
       try {
-        showLoading('Generating Report...', 'Creating analysis report...');
+        // showLoading('Generating Report...', 'Creating analysis report...');
         
         // 模拟报告生成延迟
         setTimeout(() => {
@@ -1328,11 +1358,11 @@
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
           
-          hideLoading();
-        }, 1000);
+          // hideLoading();
+        }, 100);
         
       } catch (error) {
-        hideLoading();
+        // hideLoading();
         showError(`Failed to generate report: ${error.message}`);
       }
     }
